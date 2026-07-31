@@ -57,10 +57,32 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    body { overflow-x: hidden; }
+    /* Subtle Mosaic Pattern on Background */
+    body { 
+      overflow-x: hidden; 
+      background-color: var(--bg);
+      background-image: radial-gradient(var(--accent) 0.5px, transparent 0.5px), radial-gradient(var(--accent) 0.5px, var(--bg) 0.5px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      background-blend-mode: overlay;
+      opacity: 0.99;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg);
+      opacity: 0.97;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body.menu-open { overflow: hidden; }
+
     img { display: block; max-width: 100%; height: auto; }
     
     ::selection { background: var(--accent-light); color: var(--accent); }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
     h1, h2, h3, h4 {
       font-family: var(--font-display);
@@ -80,6 +102,11 @@
       line-height: 1.15;
       letter-spacing: -0.01em;
     }
+    h2 em {
+      color: var(--accent);
+      font-style: normal;
+      text-shadow: 0 2px 4px rgba(29, 78, 216, 0.15);
+    }
     h3 {
       font-size: clamp(1.2rem, 2.2vw, 1.55rem);
       line-height: 1.3;
@@ -94,6 +121,41 @@
       text-transform: uppercase;
       color: var(--accent);
       font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .label::before {
+      content: "";
+      display: inline-block;
+      width: 3px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* Blockquotes */
+    blockquote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+      color: var(--accent);
+      line-height: 1.6;
+      position: relative;
+      padding: 1rem 2.5rem;
+      border-right: 4px solid var(--gold);
+      margin: 2rem 0;
+      background: var(--accent-light);
+      border-radius: 8px 0 0 8px;
+    }
+    blockquote::before {
+      content: "❝";
+      position: absolute;
+      right: 0.5rem;
+      top: -0.5rem;
+      font-size: 3rem;
+      color: var(--gold);
+      opacity: 0.3;
     }
 
     .container {
@@ -104,6 +166,51 @@
     
     section {
       padding-block: clamp(4.5rem, 9vh, 7.5rem);
+    }
+
+    /* Section Dividers */
+    .section-divider {
+      text-align: center;
+      margin: 4rem 0;
+      position: relative;
+    }
+    .section-divider::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--rule-strong), transparent);
+      z-index: 1;
+    }
+    .section-divider::after {
+      content: "◆";
+      position: relative;
+      z-index: 2;
+      background: var(--bg);
+      padding: 0 1rem;
+      color: var(--accent);
+      font-size: 0.8rem;
+    }
+
+    /* Animations */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(100%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slide-out {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(100%); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(96, 165, 250, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(96, 165, 250, 0); }
     }
 
     .rv {
@@ -119,6 +226,16 @@
     .rv-d2 { transition-delay: 0.2s; }
     .rv-d3 { transition-delay: 0.3s; }
     .rv-d4 { transition-delay: 0.4s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .rv { opacity: 1; transform: none; }
+    }
 
     /* ═══════════════════════════════════════════════════════════════
        HEADER 1: TOP QUICK ACTION BAR (שורה עליונה קבועה)
@@ -145,6 +262,7 @@
     .top-action-tagline::before {
       content: ''; display: inline-block; width: 7px; height: 7px;
       border-radius: 50%; background: #60A5FA;
+      animation: pulse 2s infinite;
     }
 
     .top-ctas {
@@ -159,18 +277,19 @@
       transition: all 0.25s var(--ease);
       line-height: 1;
     }
-    .top-cta-tickets {
-      background: #2563EB; color: #ffffff;
-    }
+    .top-cta-tickets { background: #2563EB; color: #ffffff; }
     .top-cta-tickets:hover { background: #1D4ED8; }
-    .top-cta-whatsapp {
-      background: #16A34A; color: #ffffff;
-    }
+    .top-cta-whatsapp { background: #16A34A; color: #ffffff; }
     .top-cta-whatsapp:hover { background: #15803D; }
-    .top-cta-donate {
-      background: #D97706; color: #ffffff;
-    }
+    .top-cta-donate { background: #D97706; color: #ffffff; }
     .top-cta-donate:hover { background: #B45309; }
+
+    @media (max-width: 768px) {
+      .top-action-tagline { display: none; }
+      .top-action-inner { justify-content: center; }
+      .top-ctas { width: 100%; justify-content: center; }
+      .top-cta-btn { padding: 0.28rem 0.5rem; font-size: 0.72rem; }
+    }
 
     /* ═══════════════════════════════════════════════════════════════
        HEADER 2: MAIN NAVIGATION WITH DROPDOWNS (7 CATEGORIES)
@@ -265,21 +384,98 @@
 
     /* Mobile Hamburger */
     .mobile-menu-btn {
-      display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--ink);
+      display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--ink);
+      transition: transform 0.3s var(--ease); padding: 0.5rem;
     }
+    .mobile-menu-btn:hover { color: var(--accent); }
     @media (max-width: 1080px) {
       .nav-categories { display: none; }
       .mobile-menu-btn { display: block; }
     }
 
+    /* Mobile Nav Panel */
+    .mobile-nav-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 85vw; max-width: 400px;
+      background: var(--surface);
+      z-index: 1000;
+      box-shadow: -10px 0 50px rgba(0,0,0,0.2);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.4s var(--ease);
+      overflow-y: auto;
+    }
+    .mobile-nav-panel.open {
+      transform: translateX(0);
+    }
+    .mobile-nav-backdrop {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s var(--ease);
+    }
+    .mobile-nav-backdrop.open {
+      opacity: 1; pointer-events: auto;
+    }
+    .mobile-nav-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.5rem; border-bottom: 1px solid var(--rule);
+    }
+    .mobile-nav-close {
+      background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--ink);
+      line-height: 1; transition: transform 0.3s;
+    }
+    .mobile-nav-close:hover { transform: rotate(90deg); color: var(--accent); }
+    .mobile-menu-list {
+      list-style: none; padding: 0; margin: 0; flex-grow: 1;
+    }
+    .mobile-menu-item {
+      border-bottom: 1px solid var(--rule);
+    }
+    .mobile-menu-link {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 1.5rem; font-size: 1.1rem; font-weight: 600; color: var(--ink); text-decoration: none;
+    }
+    .mobile-menu-link[data-toggle]::after {
+      content: '▾'; font-size: 0.9rem; transition: transform 0.3s;
+    }
+    .mobile-menu-item.active .mobile-menu-link[data-toggle]::after {
+      transform: rotate(180deg);
+    }
+    .mobile-sub-menu {
+      list-style: none; background: var(--surface-2); display: none;
+    }
+    .mobile-menu-item.active .mobile-sub-menu {
+      display: block; animation: fade-up 0.3s var(--ease);
+    }
+    .mobile-sub-menu li a {
+      display: block; padding: 1rem 2rem; font-size: 0.95rem; color: var(--muted); text-decoration: none;
+      border-bottom: 1px solid var(--rule);
+    }
+    .mobile-nav-footer {
+      padding: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem;
+    }
+    .mobile-nav-footer .top-cta-btn {
+      justify-content: center; padding: 0.8rem; font-size: 0.95rem;
+    }
+
     /* ═══════════════════════════════════════════════════════════════
        HERO SECTION
        ═══════════════════════════════════════════════════════════════ */
+    .hero-stripe {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(to right, var(--accent), var(--gold));
+      z-index: 1;
+    }
     .hero {
       background: var(--bg);
       min-height: 88vh;
       display: flex; align-items: center;
-      padding-top: 9.5rem; padding-bottom: 4rem;
+      padding-top: 10.5rem; padding-bottom: 4rem;
       position: relative;
     }
     .hero-grid {
@@ -287,7 +483,10 @@
       gap: 3.5rem; align-items: center; width: 100%;
     }
     @media (max-width: 960px) {
-      .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; text-align: center; }
+      .hero-actions { justify-content: center; }
+      .hero-img-container { display: flex; justify-content: center; }
+      .label { justify-content: center; }
     }
     .hero-text { display: flex; flex-direction: column; gap: 1.5rem; }
     .hero h1 em { font-style: normal; color: var(--accent); }
@@ -297,51 +496,92 @@
       line-height: 1.75; color: var(--muted);
       max-width: 52ch; font-weight: 300;
     }
+    @media (max-width: 960px) {
+      .hero-sub { margin-inline: auto; }
+    }
     .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; }
     
     .btn-primary {
-      background: var(--accent); color: #ffffff;
-      padding: 0.85em 2em; font-weight: 600; border-radius: 6px; text-decoration: none;
-      display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s;
+      background: linear-gradient(135deg, #2563EB, var(--accent)); color: #ffffff;
+      padding: 0.85em 2em; font-weight: 600; border-radius: 6px; text-decoration: none; border: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s;
+      cursor: pointer;
     }
-    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(29, 78, 216, 0.22); }
+    .btn-primary:hover { background: linear-gradient(135deg, var(--accent), #1E3A8A); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(29, 78, 216, 0.22); }
+    .btn-primary:active { transform: scale(0.98); }
     
     .btn-outline {
       background: transparent; border: 1.5px solid var(--accent); color: var(--accent);
       padding: 0.85em 2em; font-weight: 600; border-radius: 6px; text-decoration: none;
-      display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s;
+      cursor: pointer;
     }
-    .btn-outline:hover { background: var(--accent-light); transform: translateY(-2px); }
+    .btn-outline:hover { 
+      background: var(--accent-light); transform: translateY(-2px); 
+      border-style: dotted; 
+    }
+    .btn-outline:active { transform: scale(0.98); }
 
-    .hero-frame {
-      background: var(--surface); padding: 1.2rem;
-      border: 1px solid var(--rule-strong); border-radius: 6px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); max-width: 440px; width: 100%;
+    .hero-img-container {
+      position: relative;
     }
-    .hero-frame img { width: 100%; height: auto; display: block; border-radius: 2px; }
+    .hero-frame {
+      background: var(--surface); padding: 1.8rem;
+      border: 1px solid var(--rule-strong); border-radius: 8px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.03), 0 20px 50px rgba(15, 23, 42, 0.08); 
+      max-width: 440px; width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-frame img { width: 100%; height: auto; display: block; border-radius: 4px; }
     .hero-frame-caption {
-      font-family: var(--font-serif); font-size: 0.85rem; font-style: italic;
-      color: var(--muted); margin-top: 1rem; text-align: center; line-height: 1.5;
+      font-family: var(--font-serif); font-size: 0.9rem; font-style: italic;
+      color: var(--muted); margin-top: 1.2rem; text-align: center; line-height: 1.5;
+    }
+    .hero-badge {
+      position: absolute;
+      bottom: -15px; left: -20px;
+      background: linear-gradient(135deg, var(--gold), #B45309);
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 20px rgba(217, 119, 6, 0.3);
+      z-index: 3;
+      animation: fade-up 1s ease 0.5s both;
     }
 
     /* ═══════════════════════════════════════════════════════════════
        STATS RIBBON
        ═══════════════════════════════════════════════════════════════ */
     .stats {
-      background: var(--surface); border-block: 1px solid var(--rule);
+      background: linear-gradient(135deg, #ffffff, #F0F4FF);
+      border-block: 1px solid var(--rule);
       padding-block: clamp(2.5rem, 5vw, 4rem);
     }
     .stats-row {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
     }
-    @media (max-width: 768px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { 
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; } 
+      .stat:nth-child(odd) { border-left: 1px solid var(--rule-strong); }
+      .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--rule-strong); padding-bottom: 1.5rem; }
+    }
     .stat { text-align: center; }
+    .stat-num-wrapper {
+      display: inline-flex; align-items: baseline;
+    }
     .stat-num {
       font-family: var(--font-display); font-size: clamp(2.8rem, 6vw, 4.5rem);
       font-weight: 900; line-height: 1; color: var(--accent);
     }
-    .stat-txt { font-size: 0.85rem; color: var(--muted); margin-top: 0.4rem; font-weight: 500; }
-    @media (min-width: 769px) { .stat + .stat { border-inline-start: 1px solid var(--rule); } }
+    .stat-plus {
+      font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--gold); margin-right: 0.2rem;
+    }
+    .stat-txt { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; font-weight: 600; }
+    @media (min-width: 769px) { .stat + .stat { border-inline-start: 1px solid var(--rule-strong); } }
 
     /* ═══════════════════════════════════════════════════════════════
        SECTION 1: דוד לוי (האיש והמורשת)
@@ -356,24 +596,151 @@
     }
     .bio-img img { width: 100%; height: 100%; object-fit: cover; }
     .bio-text { display: flex; flex-direction: column; gap: 1.3rem; }
-    .bio-text p { color: var(--muted); font-size: 1.02rem; line-height: 1.8; font-weight: 300; }
+    .bio-text p { color: var(--muted); font-size: 1.05rem; line-height: 1.8; font-weight: 400; }
 
     /* Archive & Media tabs inside Section 1 */
     .media-box {
       background: var(--surface); border: 1px solid var(--rule);
-      border-radius: 10px; padding: 1.8rem; margin-top: 2rem;
+      border-radius: 10px; padding: 2.5rem; margin-top: 3rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
     }
     .media-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-top: 1rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;
     }
     .media-card {
-      background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 1rem;
-      display: flex; flex-direction: column; gap: 0.5rem; text-decoration: none; color: var(--ink);
-      transition: all 0.25s ease;
+      background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 0.8rem; text-decoration: none; color: var(--ink);
+      transition: all 0.3s var(--ease);
+      border-right: 3px solid transparent;
+      position: relative;
+      overflow: hidden;
     }
-    .media-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .media-card-title { font-weight: 700; font-size: 0.95rem; }
-    .media-card-desc { font-size: 0.82rem; color: var(--muted); }
+    .media-card::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, transparent, var(--accent-light));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .media-card:hover { 
+      border-color: var(--accent); transform: translateY(-4px) scale(1.02); 
+      border-right: 3px solid var(--accent);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+    }
+    .media-card:hover::before { opacity: 1; }
+    .media-card-title { font-weight: 700; font-size: 1.05rem; position: relative; z-index: 1; }
+    .media-card-desc { font-size: 0.9rem; color: var(--muted); position: relative; z-index: 1; line-height: 1.5; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       TIMELINE MODULE
+       ═══════════════════════════════════════════════════════════════ */
+    .timeline {
+      background: var(--surface-2);
+      padding-block: 5rem;
+    }
+    .timeline-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .tl {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+    .tl::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      width: 2px;
+      background: var(--accent);
+      opacity: 0.2;
+      transform: translateX(-50%);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 3rem;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end; /* RTL default to right side of center */
+    }
+    .tl-item:nth-child(even) {
+      justify-content: flex-start;
+    }
+    .tl-marker {
+      position: absolute;
+      left: 50%;
+      top: 1.5rem;
+      transform: translate(-50%, -50%);
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      border: 4px solid var(--surface-2);
+      border-radius: 50%;
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-weight: 700; font-size: 0.9rem;
+      z-index: 2;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.3);
+    }
+    .tl-content {
+      width: 45%;
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      position: relative;
+      border-right: 4px solid var(--accent);
+      transition: transform 0.3s var(--ease);
+    }
+    .tl-item:nth-child(even) .tl-content {
+      border-right: none;
+      border-left: 4px solid var(--accent);
+    }
+    .tl-content:hover {
+      transform: translateY(-5px);
+    }
+    .tl-year {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      background: var(--accent-light);
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+    .tl-title {
+      font-size: 1.3rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      color: var(--ink);
+    }
+    .tl-desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .tl::before {
+        left: auto; right: 20px;
+      }
+      .tl-item, .tl-item:nth-child(even) {
+        justify-content: flex-start;
+      }
+      .tl-marker {
+        left: auto; right: 20px;
+        transform: translate(50%, -50%);
+        width: 36px; height: 36px; font-size: 0.7rem;
+      }
+      .tl-content {
+        width: calc(100% - 60px);
+        margin-right: 60px;
+        border-right: 4px solid var(--accent) !important;
+        border-left: none !important;
+      }
+    }
 
     /* ═══════════════════════════════════════════════════════════════
        SECTION 2: המרכז (ארגוני, ממשלתי, חוק המרכז, דוחות)
@@ -398,11 +765,26 @@
       display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;
     }
     .org-card {
-      background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 1.8rem;
+      background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 2rem;
       display: flex; flex-direction: column; gap: 0.8rem;
+      transition: all 0.3s var(--ease);
+      border-top: 3px solid transparent;
+      position: relative; overflow: hidden;
     }
-    .org-card h4 { font-family: var(--font-display); font-size: 1.2rem; color: var(--accent); }
-    .org-card p { font-size: 0.92rem; color: var(--muted); line-height: 1.65; }
+    .org-card::after {
+      content: ""; position: absolute; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(135deg, transparent, var(--accent-light));
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .org-card:hover { 
+      transform: translateY(-4px) scale(1.02); 
+      border-color: var(--rule-strong);
+      border-top-color: var(--accent); 
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08); 
+    }
+    .org-card:hover::after { opacity: 1; }
+    .org-card h4 { font-family: var(--font-display); font-size: 1.3rem; color: var(--accent); z-index: 1; }
+    .org-card p { font-size: 0.95rem; color: var(--muted); line-height: 1.65; z-index: 1; }
 
     /* ═══════════════════════════════════════════════════════════════
        SECTION 3: לבקר במרכז (שעות, כרטיסים, משלחות, קהלים)
@@ -414,24 +796,30 @@
     @media (min-width: 900px) { .visit-grid { grid-template-columns: 1fr 1fr; } }
     
     .visit-info-box {
-      background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 2.2rem;
+      background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 2.5rem;
       display: flex; flex-direction: column; gap: 1.2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     }
-    .visit-row { display: flex; gap: 1rem; align-items: flex-start; padding-bottom: 1rem; border-bottom: 1px solid var(--rule); }
+    .visit-row { display: flex; gap: 1.2rem; align-items: flex-start; padding-bottom: 1.2rem; border-bottom: 1px solid var(--rule); }
+    .visit-row:last-of-type { border-bottom: none; }
     .visit-icon {
-      width: 44px; height: 44px; border-radius: 8px; background: var(--accent-light); color: var(--accent);
-      display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;
+      width: 48px; height: 48px; border-radius: 10px; background: var(--accent-light); color: var(--accent);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
     }
-    .visit-detail h5 { font-size: 1rem; font-weight: 700; color: var(--ink); }
-    .visit-detail p { font-size: 0.9rem; color: var(--muted); }
+    .visit-detail h5 { font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 0.3rem;}
+    .visit-detail p { font-size: 0.95rem; color: var(--muted); }
 
     /* Audience Grid */
     .audience-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-top: 1.5rem;
     }
     .audience-chip {
-      background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 0.8rem 1rem;
-      text-align: center; font-size: 0.9rem; font-weight: 600; color: var(--ink);
+      background: var(--surface-2); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem;
+      text-align: center; font-size: 0.95rem; font-weight: 600; color: var(--ink);
+      transition: all 0.2s;
+    }
+    .audience-chip:hover {
+      background: var(--accent); color: #fff; transform: translateY(-2px);
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -439,59 +827,59 @@
        ═══════════════════════════════════════════════════════════════ */
     .edu-section { background: var(--surface); border-block: 1px solid var(--rule); }
     .edu-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem;
     }
     .edu-card {
-      background: var(--bg); border: 1px solid var(--rule); border-radius: 10px; padding: 1.8rem;
-      display: flex; flex-direction: column; gap: 0.9rem; transition: transform 0.3s;
+      background: var(--bg); border: 1px solid var(--rule); border-radius: 12px; padding: 2rem;
+      display: flex; flex-direction: column; gap: 1rem; transition: all 0.3s var(--ease);
+      border-top: 4px solid transparent;
+      position: relative; overflow: hidden;
     }
-    .edu-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+    .edu-card::before {
+      content: ""; position: absolute; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(180deg, transparent, var(--accent-light));
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .edu-card:hover { 
+      transform: translateY(-5px) scale(1.02); 
+      border-top-color: var(--accent); 
+      box-shadow: 0 15px 30px rgba(15,23,42,0.06);
+    }
+    .edu-card:hover::before { opacity: 1; }
     .edu-card-tag {
-      font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); background: var(--accent-light);
-      padding: 0.2rem 0.6rem; border-radius: 4px; align-self: flex-start;
+      font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); background: var(--accent-light);
+      padding: 0.3rem 0.8rem; border-radius: 4px; align-self: flex-start; z-index: 1;
     }
+    .edu-card h4 { z-index: 1; font-size: 1.2rem; }
+    .edu-card p { z-index: 1; font-size: 0.95rem; color: var(--muted); line-height: 1.6; }
 
     /* ═══════════════════════════════════════════════════════════════
        SECTION 5: אירועים ותערוכות (לוח מתעדכן שוטף)
        ═══════════════════════════════════════════════════════════════ */
     .events-section { background: var(--bg); }
-    .events-list { display: flex; flex-direction: column; gap: 1.2rem; }
+    .events-list { display: flex; flex-direction: column; gap: 1.5rem; max-width: 900px; margin: 0 auto; }
     .event-row {
-      background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 1.5rem 2rem;
-      display: grid; grid-template-columns: 120px 1fr auto; gap: 1.5rem; align-items: center;
+      background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 2rem;
+      display: grid; grid-template-columns: 120px 1fr auto; gap: 2rem; align-items: center;
+      transition: all 0.3s var(--ease);
     }
-    @media (max-width: 700px) { .event-row { grid-template-columns: 1fr; } }
+    .event-row:hover {
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      border-color: var(--accent);
+    }
+    @media (max-width: 700px) { 
+      .event-row { grid-template-columns: 1fr; text-align: center; gap: 1rem; padding: 1.5rem; } 
+      .event-date { border-inline-end: none !important; border-bottom: 2px solid var(--rule); padding-bottom: 1rem; }
+    }
     .event-date {
-      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent);
+      font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent);
       text-align: center; border-inline-end: 2px solid var(--rule); padding-inline-end: 1rem;
     }
-    .event-info h4 { font-size: 1.15rem; margin-bottom: 0.2rem; }
-    .event-info p { font-size: 0.88rem; color: var(--muted); }
+    .event-info h4 { font-size: 1.3rem; margin-bottom: 0.4rem; }
+    .event-info p { font-size: 0.95rem; color: var(--muted); }
 
     /* ═══════════════════════════════════════════════════════════════
-       SECTION 6: תמיכה וקהילה (חוג ידידים, ניוזלטר, חדשות)
-       ═══════════════════════════════════════════════════════════════ */
-    .community-section { background: var(--surface); }
-
-    /* ═══════════════════════════════════════════════════════════════
-       SECTION 7: יצירת קשר (טופס + וואטסאפ)
-       ═══════════════════════════════════════════════════════════════ */
-    .contact-section { background: var(--bg); }
-    .contact-grid {
-      display: grid; grid-template-columns: 1fr; gap: 2.5rem;
-    }
-    @media (min-width: 900px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
-
-    .fg { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
-    .fg-label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
-    .fg-input, .fg-textarea {
-      background: var(--surface); border: 1px solid var(--rule); color: var(--ink);
-      font-family: var(--font-body); font-size: 0.95rem; padding: 0.75rem 0.9rem; border-radius: 6px; outline: none;
-    }
-    .fg-input:focus, .fg-textarea:focus { border-color: var(--accent); }
-
-    /* ═══════════════════════════════════════════════════════════════
-       CONDITIONAL SECTION: אודות המוזיאון (במידה ויוחלט על מוזיאון פיזי)
+       CONDITIONAL SECTION: אודות המוזיאון
        ═══════════════════════════════════════════════════════════════ */
     .museum-section {
       background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
@@ -501,18 +889,77 @@
     .museum-badge-conditional {
       display: inline-flex; align-items: center; gap: 0.5rem;
       background: rgba(217, 119, 6, 0.2); border: 1px solid #D97706; color: #FBBF24;
-      font-family: var(--font-mono); font-size: 0.78rem; padding: 0.3rem 0.8rem; border-radius: 4px; margin-bottom: 1rem;
+      font-family: var(--font-mono); font-size: 0.78rem; padding: 0.4rem 1rem; border-radius: 6px; margin-bottom: 1.5rem;
     }
     .museum-section h2 { color: #ffffff; }
-    .museum-section p { color: rgba(255,255,255,0.82); }
+    .museum-section p { color: rgba(255,255,255,0.85); font-size: 1.05rem; line-height: 1.7; }
     .museum-rooms {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2.5rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; margin-top: 3rem;
     }
     .museum-room-card {
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 2rem; display: flex; flex-direction: column; gap: 0.8rem;
+      transition: all 0.3s;
     }
-    .museum-room-card h4 { color: #60A5FA; font-size: 1.1rem; }
+    .museum-room-card:hover {
+      background: rgba(255,255,255,0.08); border-color: rgba(96, 165, 250, 0.5);
+      box-shadow: 0 0 20px rgba(96, 165, 250, 0.15);
+      transform: translateY(-5px);
+    }
+    .museum-room-card h4 { color: #60A5FA; font-size: 1.2rem; }
+    .museum-room-card p { font-size: 0.95rem; color: rgba(255,255,255,0.7); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SECTION 6: תמיכה וקהילה
+       ═══════════════════════════════════════════════════════════════ */
+    .community-section { 
+      background: linear-gradient(to bottom, var(--surface), #FFFBF0); 
+      border-block: 1px solid var(--rule);
+    }
+    .donation-tiers {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem; margin: 3rem 0;
+    }
+    .tier-card {
+      background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 2.5rem 2rem;
+      text-align: center; transition: all 0.3s;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    .tier-card:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 15px 30px rgba(217, 119, 6, 0.1); }
+    .tier-name { font-size: 1.4rem; font-family: var(--font-display); font-weight: 700; color: var(--ink); }
+    .tier-amount { font-family: var(--font-mono); font-size: 2rem; color: var(--accent); font-weight: 700; }
+    .tier-desc { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; }
+    
+    /* ═══════════════════════════════════════════════════════════════
+       SECTION 7: יצירת קשר (טופס + וואטסאפ)
+       ═══════════════════════════════════════════════════════════════ */
+    .contact-section { background: var(--bg); }
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr; gap: 3rem;
+    }
+    @media (min-width: 900px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
+
+    .form-card {
+      background: var(--surface); padding: 2.5rem; border-radius: 12px; border: 1px solid var(--rule);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+    .form-card h3 { margin-bottom: 1.5rem; }
+    .fg { position: relative; margin-bottom: 1.5rem; }
+    .fg-label { 
+      position: absolute; top: -0.5rem; right: 1rem; background: var(--surface); padding: 0 0.4rem;
+      font-size: 0.8rem; color: var(--muted); font-weight: 600; 
+      transition: color 0.2s;
+    }
+    .fg-input, .fg-textarea {
+      width: 100%;
+      background: transparent; border: 1.5px solid var(--rule-strong); color: var(--ink);
+      font-family: var(--font-body); font-size: 1rem; padding: 1rem; border-radius: 8px; outline: none;
+      transition: all 0.3s;
+    }
+    .fg-input:focus, .fg-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); }
+    .fg-input:focus ~ .fg-label, .fg-textarea:focus ~ .fg-label { color: var(--accent); }
+    
+    .form-card .btn-primary { width: 100%; padding: 1rem; font-size: 1.1rem; }
 
     /* ═══════════════════════════════════════════════════════════════
        FOOTER
@@ -521,18 +968,46 @@
       background: var(--navy); color: rgba(255, 255, 255, 0.75);
       padding-block: clamp(3.5rem, 6vw, 5rem) 1.8rem;
     }
-    .footer h3 { color: #ffffff; margin-bottom: 0.6rem; font-size: 1.1rem; }
+    .footer h3 { color: #ffffff; margin-bottom: 1rem; font-size: 1.2rem; }
     .footer a { color: rgba(255, 255, 255, 0.75); text-decoration: none; transition: color 0.2s; }
-    .footer a:hover { color: #ffffff; }
+    .footer a:hover { color: #ffffff; text-decoration: underline; text-underline-offset: 4px; }
     .footer-grid {
-      display: grid; grid-template-columns: 1fr; gap: 2.5rem; margin-bottom: 2.5rem;
+      display: grid; grid-template-columns: 1fr; gap: 3rem; margin-bottom: 3rem;
     }
-    @media (min-width: 768px) { .footer-grid { grid-template-columns: 1.5fr 1fr; } }
+    @media (min-width: 768px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; } }
     
+    .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+
     .footer-bottom {
-      border-top: 1px solid rgba(255, 255, 255, 0.12); padding-top: 1.2rem;
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.78rem; color: rgba(255, 255, 255, 0.45);
+      border-top: 1px solid rgba(255, 255, 255, 0.12); padding-top: 1.5rem;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+      font-size: 0.85rem; color: rgba(255, 255, 255, 0.45);
+    }
+    
+    .back-to-top {
+      position: fixed; bottom: 30px; left: 30px;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; text-decoration: none;
+      box-shadow: 0 10px 20px rgba(29, 78, 216, 0.3);
+      opacity: 0; visibility: hidden; transition: all 0.3s;
+      z-index: 500;
+    }
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+    .back-to-top:hover { transform: translateY(-5px); background: var(--accent-hover); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       PRINT STYLES
+       ═══════════════════════════════════════════════════════════════ */
+    @media print {
+      .top-action-bar, .main-nav, .hero-actions, .mobile-menu-btn, .mobile-nav-panel, .back-to-top, .footer {
+        display: none !important;
+      }
+      body { background: #fff; color: #000; }
+      .container { max-width: 100%; padding: 0; }
+      section { padding-block: 2rem; page-break-inside: avoid; }
+      .hero { min-height: auto; padding-top: 2rem; }
     }
   </style>
 </head>
@@ -556,7 +1031,7 @@
   <header class="main-nav" id="nav">
     <div class="nav-inner-container">
       <a class="nav-logo" href="#" aria-label="מרכז דוד לוי - עמוד הבית">
-        <img src="logo2.jpg" alt="לוגו מרכז דוד לוי - סמל הפסיפס" style="width:38px; height:38px; object-fit:cover; border-radius:6px; border:1px solid rgba(29,78,216,0.2);">
+        <img src="logo2.jpg" alt="לוגו מרכז דוד לוי - סמל הפסיפס" style="width:42px; height:42px; object-fit:cover; border-radius:8px; border:1px solid rgba(29,78,216,0.2);">
         <div class="logo-text-wrap">
           <span class="logo-title-text">מרכז <span>דוד לוי</span></span>
           <span class="logo-subtitle-text">מנהיגות · צדק חברתי · מורשת</span>
@@ -568,8 +1043,8 @@
         
         <!-- Category 1: דוד לוי -->
         <li class="nav-item">
-          <a href="#david-levy">1. דוד לוי</a>
-          <ul class="dropdown">
+          <a href="#david-levy" aria-expanded="false" aria-haspopup="true">1. דוד לוי</a>
+          <ul class="dropdown" role="menu">
             <li><a href="#david-levy">רקע וביוגרפיה <span class="badge-sm">1937-2024</span></a></li>
             <li><a href="#timeline">ציר הזמן והישגים <span class="badge-sm">37 שנים</span></a></li>
             <li><a href="#heritage-vision">על האיש והחזון <span class="badge-sm">ערכים</span></a></li>
@@ -579,8 +1054,8 @@
 
         <!-- Category 2: המרכז -->
         <li class="nav-item">
-          <a href="#the-center">2. המרכז</a>
-          <ul class="dropdown">
+          <a href="#the-center" aria-expanded="false" aria-haspopup="true">2. המרכז</a>
+          <ul class="dropdown" role="menu">
             <li><a href="#org-about" onclick="openTab('tab-about')">מי אנחנו</a></li>
             <li><a href="#org-docs" onclick="openTab('tab-docs')">מסמכי יסוד</a></li>
             <li><a href="#org-reports" onclick="openTab('tab-reports')">דוחות ותכנית עבודה 2026</a></li>
@@ -593,8 +1068,8 @@
 
         <!-- Category 3: לבקר במרכז -->
         <li class="nav-item">
-          <a href="#visit">3. לבקר במרכז</a>
-          <ul class="dropdown">
+          <a href="#visit" aria-expanded="false" aria-haspopup="true">3. לבקר במרכז</a>
+          <ul class="dropdown" role="menu">
             <li><a href="#visit-info">מידע למבקר (שעות ונגישות)</a></li>
             <li><a href="#visit-tickets">רכישת כרטיסים</a></li>
             <li><a href="#visit-groups">קבוצות, משלחות ואירועים</a></li>
@@ -604,8 +1079,8 @@
 
         <!-- Category 4: חינוך -->
         <li class="nav-item">
-          <a href="#education">4. חינוך</a>
-          <ul class="dropdown">
+          <a href="#education" aria-expanded="false" aria-haspopup="true">4. חינוך</a>
+          <ul class="dropdown" role="menu">
             <li><a href="#education">ערכות חינוכיות</a></li>
             <li><a href="#education">אסופת זיכרון וכרזות</a></li>
             <li><a href="#education">סרטים וימי עיון לתלמידים</a></li>
@@ -619,8 +1094,8 @@
 
         <!-- Category 6: תמיכה וקהילה -->
         <li class="nav-item">
-          <a href="#community">6. תמיכה וקהילה</a>
-          <ul class="dropdown">
+          <a href="#community" aria-expanded="false" aria-haspopup="true">6. תמיכה וקהילה</a>
+          <ul class="dropdown" role="menu">
             <li><a href="#donate">חוג ידידים ותרומות</a></li>
             <li><a href="#newsletter">הצטרפו לניוזלטר</a></li>
             <li><a href="#community">חדשות, הזדמנויות וסיפורים</a></li>
@@ -634,12 +1109,77 @@
 
       </ul>
 
-      <button class="mobile-menu-btn" onclick="alert('תפריט מובייל נפתח')">☰</button>
+      <button class="mobile-menu-btn" id="mobile-menu-open" aria-label="פתח תפריט מובייל" aria-expanded="false">☰</button>
     </div>
   </header>
 
+  <!-- MOBILE NAVIGATION PANEL -->
+  <div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>
+  <div class="mobile-nav-panel" id="mobile-nav-panel" role="dialog" aria-modal="true">
+    <div class="mobile-nav-header">
+      <div class="logo-text-wrap">
+        <span class="logo-title-text" style="font-size:1.1rem;">מרכז <span>דוד לוי</span></span>
+      </div>
+      <button class="mobile-nav-close" id="mobile-menu-close" aria-label="סגור תפריט">✕</button>
+    </div>
+    <ul class="mobile-menu-list">
+      <li class="mobile-menu-item">
+        <a href="#david-levy" class="mobile-menu-link" data-toggle="true">1. דוד לוי</a>
+        <ul class="mobile-sub-menu">
+          <li><a href="#david-levy">רקע וביוגרפיה</a></li>
+          <li><a href="#timeline">ציר הזמן והישגים</a></li>
+          <li><a href="#heritage-vision">על האיש והחזון</a></li>
+          <li><a href="#archive-media">ארכיון וסרטים</a></li>
+        </ul>
+      </li>
+      <li class="mobile-menu-item">
+        <a href="#the-center" class="mobile-menu-link" data-toggle="true">2. המרכז</a>
+        <ul class="mobile-sub-menu">
+          <li><a href="#org-about" onclick="openTab('tab-about')">מי אנחנו</a></li>
+          <li><a href="#org-docs" onclick="openTab('tab-docs')">מסמכי יסוד</a></li>
+          <li><a href="#org-reports" onclick="openTab('tab-reports')">דוחות ותכנית עבודה</a></li>
+          <li><a href="#org-law" onclick="openTab('tab-law')">חוק המרכז ומוסדות</a></li>
+        </ul>
+      </li>
+      <li class="mobile-menu-item">
+        <a href="#visit" class="mobile-menu-link" data-toggle="true">3. לבקר במרכז</a>
+        <ul class="mobile-sub-menu">
+          <li><a href="#visit-info">מידע למבקר</a></li>
+          <li><a href="#visit-tickets">רכישת כרטיסים</a></li>
+          <li><a href="#visit-groups">קבוצות, משלחות ואירועים</a></li>
+        </ul>
+      </li>
+      <li class="mobile-menu-item">
+        <a href="#education" class="mobile-menu-link" data-toggle="true">4. חינוך</a>
+        <ul class="mobile-sub-menu">
+          <li><a href="#education">ערכות חינוכיות</a></li>
+          <li><a href="#education">אסופת זיכרון</a></li>
+        </ul>
+      </li>
+      <li class="mobile-menu-item">
+        <a href="#events" class="mobile-menu-link">5. אירועים ותערוכות</a>
+      </li>
+      <li class="mobile-menu-item">
+        <a href="#community" class="mobile-menu-link" data-toggle="true">6. תמיכה וקהילה</a>
+        <ul class="mobile-sub-menu">
+          <li><a href="#donate">תרומות</a></li>
+          <li><a href="#newsletter">ניוזלטר</a></li>
+        </ul>
+      </li>
+      <li class="mobile-menu-item">
+        <a href="#contact" class="mobile-menu-link">7. יצירת קשר</a>
+      </li>
+    </ul>
+    <div class="mobile-nav-footer">
+      <a href="#visit" class="top-cta-btn top-cta-tickets">🎫 רכישת כרטיסים</a>
+      <a href="https://wa.me/972528991833" target="_blank" class="top-cta-btn top-cta-whatsapp">💬 יצירת קשר בוואטסאפ</a>
+      <a href="#donate" class="top-cta-btn top-cta-donate">💛 לתרום</a>
+    </div>
+  </div>
+
   <!-- HERO SECTION -->
   <header class="hero" id="top">
+    <div class="hero-stripe"></div>
     <div class="container">
       <div class="hero-grid">
         <div class="hero-text">
@@ -651,8 +1191,9 @@
             <a href="#visit" class="btn-outline">תכננו ביקור במרכז</a>
           </div>
         </div>
-        <div class="hero-img-container rv rv-d4">
+        <div class="hero-img-container rv rv-d4" id="hero-img-wrapper">
           <div class="hero-frame">
+            <div class="hero-badge">פרס ישראל 2018</div>
             <img src="images/portrait.png" alt="דוד לוי ז״ל, דיוקן ממלכתי" loading="eager">
             <div class="hero-frame-caption">דוד לוי ז״ל (1937–2024) — חתן פרס ישראל למפעל חיים</div>
           </div>
@@ -666,19 +1207,27 @@
     <div class="container">
       <div class="stats-row">
         <div class="stat rv">
-          <div class="stat-num" data-target="37">0</div>
+          <div class="stat-num-wrapper">
+            <span class="stat-num" data-target="37">0</span><span class="stat-plus">+</span>
+          </div>
           <div class="stat-txt">שנות כהונה בכנסת ישראל</div>
         </div>
         <div class="stat rv rv-d1">
-          <div class="stat-num" data-target="160">0</div>
+          <div class="stat-num-wrapper">
+            <span class="stat-num" data-target="160">0</span><span class="stat-plus">+</span>
+          </div>
           <div class="stat-txt">שכונות שוקמו בפרויקט השיקום</div>
         </div>
         <div class="stat rv rv-d2">
-          <div class="stat-num" data-target="230">0</div>
+          <div class="stat-num-wrapper">
+            <span class="stat-num" data-target="230">0</span><span class="stat-plus">+</span>
+          </div>
           <div class="stat-txt">יישובים חדשים שהוקמו</div>
         </div>
         <div class="stat rv rv-d3">
-          <div class="stat-num" data-target="34">0</div>
+          <div class="stat-num-wrapper">
+            <span class="stat-num" data-target="34">0</span><span class="stat-plus">+</span>
+          </div>
           <div class="stat-txt">מדינות עמן כונן יחסים כשר חוץ</div>
         </div>
       </div>
@@ -696,17 +1245,19 @@
         </div>
         <div class="bio-text">
           <div class="label rv">קטגוריה 1 · דוד לוי — האיש והמורשת</div>
-          <h2 class="rv rv-d1">מי היה דוד לוי ולמה מוקדש לו מרכז המורשת?</h2>
+          <h2 class="rv rv-d1">מי היה דוד לוי ולמה מוקדש לו <em>מרכז המורשת?</em></h2>
           <p class="rv rv-d2"><strong>דוד לוי נולד ברבאט שבמרוקו בשנת 1937</strong> למשפחה מסורתית וציונית. בשנת 1957 עלה לישראל במסגרת גלי העלייה מצפון אפריקה. המשפחה התיישבה בעיירת הפיתוח בית שאן. מראשית דרכו עבד בעבודות כפיים — בבנייה, בחקלאות ובייעור — והתבלט כמנהיג טבעי שנאבק למען תנאי החיים של העובדים ותושבי הפריפריה.</p>
           <p class="rv rv-d3"><strong>המשפחה כעוגן ערכי וחברתי:</strong> הקים את ביתו בבית שאן יחד עם רעייתו רחל. בני הזוג הקימו משפחה ברוכת ילדים (תריסר ילדים). החלטתו העקרונית שלא להעתיק את מגוריו לירושלים או למרכז הארץ הייתה הצהרה חברתית ותרבותית ברורה: להישאר חלק בלתי נפרד מאנשי הפריפריה מתוך שותפות גורל מלאה. מתוך התא המשפחתי צמחו ממשיכי דרכו הציבורית: בתו השרה אורלי לוי-אבקסיס ובנו ז'קי לוי (סגן שר וראש עיריית בית שאן).</p>
           <p class="rv rv-d4">בשנת 2018 הוענק לו <strong>פרס ישראל למפעל חיים</strong> על נשיאת קולם של מי שלא זכו לייצוג ממשי ועל פועלו ללא לאות לצמצום פערים חברתיים. ביום 2 ביוני 2024 הלך לעולמו בגיל 86, כשהוא מותיר מורשת ממלכתית וחברתית חיה.</p>
         </div>
       </div>
 
+      <div class="section-divider rv"></div>
+
       <!-- Archive & Movies Sub-Module -->
       <div class="media-box rv" id="archive-media">
         <div class="label">ארכיון וסרטים — חומרים היסטוריים</div>
-        <h3 style="margin-top:0.3rem;">אסופת נאומים, תצלומים וסרטי תיעוד</h3>
+        <h3 style="margin-top:0.8rem;">אסופת נאומים, תצלומים וסרטי תיעוד</h3>
         <div class="media-grid">
           <a href="#" class="media-card">
             <div class="media-card-title">🎥 נאום השר בכנסת (1981)</div>
@@ -730,8 +1281,8 @@
     <div class="container">
       <div class="timeline-header">
         <div class="label rv">ציר הזמן ותחנות החיים</div>
-        <h2 class="rv rv-d1">37 שנות מנהיגות ועשייה</h2>
-        <p class="rv rv-d2">ציוני דרך עיקריים מתוך מסמך היסוד של המרכז.</p>
+        <h2 class="rv rv-d1">37 שנות <em>מנהיגות ועשייה</em></h2>
+        <p class="rv rv-d2" style="margin: 0 auto; color: var(--muted); margin-top: 1rem;">ציוני דרך עיקריים מתוך מסמך היסוד של המרכז.</p>
       </div>
 
       <div class="tl">
@@ -786,8 +1337,8 @@
     <div class="container">
       <div class="org-header">
         <div class="label rv">קטגוריה 2 · המרכז</div>
-        <h2 class="rv rv-d1">כל המידע הארגוני, הממשלתי והמוסדי</h2>
-        <p class="rv rv-d2">מידע שקוף ומקיף עבור עיתונאים, רשויות מקומיות, שותפים ומחפשי עבודה.</p>
+        <h2 class="rv rv-d1">כל המידע הארגוני, <em>הממשלתי והמוסדי</em></h2>
+        <p class="rv rv-d2" style="margin: 0 auto; margin-top: 1rem; color: var(--muted);">מידע שקוף ומקיף עבור עיתונאים, רשויות מקומיות, שותפים ומחפשי עבודה.</p>
       </div>
 
       <!-- Tabbed Sub-Category Viewer -->
@@ -901,8 +1452,8 @@
     <div class="container">
       <div class="org-header">
         <div class="label rv">קטגוריה 3 · לבקר במרכז</div>
-        <h2 class="rv rv-d1">תכנון ביקור, סיורים ומשלחות</h2>
-        <p class="rv rv-d2">כל מה שמבקר צריך לפני ההגעה, בזמן התכנון ולפי סוג הקהל.</p>
+        <h2 class="rv rv-d1">תכנון ביקור, <em>סיורים ומשלחות</em></h2>
+        <p class="rv rv-d2" style="margin: 0 auto; margin-top: 1rem; color: var(--muted);">כל מה שמבקר צריך לפני ההגעה, בזמן התכנון ולפי סוג הקהל.</p>
       </div>
 
       <div class="visit-grid">
@@ -928,16 +1479,16 @@
               <p>התאמות נגישות מלאות לכיסאות גלגלים, מערכות עזר לשמיעה ועזרי ראייה.</p>
             </div>
           </div>
-          <div style="margin-top:1rem;" id="visit-tickets">
-            <a href="#donate" class="btn-primary">🎟️ רכישת כרטיסים אונליין</a>
+          <div style="margin-top:1.5rem;" id="visit-tickets">
+            <a href="#donate" class="btn-primary" style="width: 100%;">🎟️ רכישת כרטיסים אונליין</a>
           </div>
         </div>
 
         <div class="visit-info-box rv rv-d1" id="visit-groups">
           <h3>קבוצות, משלחות ואירועים</h3>
-          <p style="color:var(--muted); font-size:0.95rem;">תיאום סיורים מודרכים לקבוצות מאורגנות, משלחות דיפלומטיות, כוחות הביטחון וימי עיון מוסדיים.</p>
+          <p style="color:var(--muted); font-size:1rem; margin-bottom: 1.5rem;">תיאום סיורים מודרכים לקבוצות מאורגנות, משלחות דיפלומטיות, כוחות הביטחון וימי עיון מוסדיים.</p>
           
-          <div class="label" style="margin-top:1rem;">מבקרים לפי קהל יעד:</div>
+          <div class="label">מבקרים לפי קהל יעד:</div>
           <div class="audience-grid" id="visit-audiences">
             <div class="audience-chip">🎓 מערכת החינוך</div>
             <div class="audience-chip">🛡️ כוחות הביטחון</div>
@@ -958,8 +1509,8 @@
     <div class="container">
       <div class="org-header">
         <div class="label rv">קטגוריה 4 · חינוך</div>
-        <h2 class="rv rv-d1">חומרי הוראה, הפעלה ופדגוגיה</h2>
-        <p class="rv rv-d2">משאבים פדגוגיים מקיפים עבור מורים, מדריכים וגורמי חינוך בבתי ספר ותנועות נוער.</p>
+        <h2 class="rv rv-d1">חומרי הוראה, <em>הפעלה ופדגוגיה</em></h2>
+        <p class="rv rv-d2" style="margin: 0 auto; margin-top: 1rem; color: var(--muted);">משאבים פדגוגיים מקיפים עבור מורים, מדריכים וגורמי חינוך בבתי ספר ותנועות נוער.</p>
       </div>
 
       <div class="edu-grid">
@@ -995,7 +1546,7 @@
       <div class="org-header">
         <div class="label rv">קטגוריה 5 · אירועים ותערוכות</div>
         <h2 class="rv rv-d1">לוח אירועים ותערוכות מתחלפות</h2>
-        <p class="rv rv-d2">לוח פעילויות מתעדכן שוטף — כנסים, הרצאות, ימי זיכרון ותערוכות.</p>
+        <p class="rv rv-d2" style="margin: 0 auto; margin-top: 1rem; color: var(--muted);">לוח פעילויות מתעדכן שוטף — כנסים, הרצאות, ימי זיכרון ותערוכות.</p>
       </div>
 
       <div class="events-list">
@@ -1005,7 +1556,7 @@
             <h4>כנס המנהיגות החברתית השנתי</h4>
             <p>דיון מיוחד בנושא שוויון הזדמנויות ופיתוח הפריפריה בהשתתפות חוקרים, אנשי חינוך ואישי ציבור.</p>
           </div>
-          <a href="#visit" class="btn-outline" style="font-size:0.82rem; padding:0.5em 1em;">הרשמה לאירוע</a>
+          <a href="#visit" class="btn-outline">הרשמה לאירוע</a>
         </div>
 
         <div class="event-row rv rv-d1">
@@ -1014,7 +1565,7 @@
             <h4>עצרת הזיכרון הממלכתית למורשת דוד לוי ז״ל</h4>
             <p>אירוע הנצחה מרכזי במלאת שנתיים לפטירתו — הענקת מלגות המנהיגות הצעירה.</p>
           </div>
-          <a href="#visit" class="btn-outline" style="font-size:0.82rem; padding:0.5em 1em;">פרטים נוספים</a>
+          <a href="#visit" class="btn-outline">פרטים נוספים</a>
         </div>
       </div>
     </div>
@@ -1032,19 +1583,19 @@
       <p style="margin-top:0.5rem; max-width:700px;">מסלול תצוגה חווייתי ואינטראקטיבי המוליך את המבקר בין תחנות חייו של דוד לוי והמהפכות החברתיות שהוביל.</p>
 
       <div class="museum-rooms">
-        <div class="museum-room-card">
+        <div class="museum-room-card rv">
           <h4>חדר 1: מערי הפיתוח לממשלה</h4>
           <p>תצוגת בית שאן, שנות העלייה, עבודת כפיים בבנייה וצמיחת המנהיגות השורשית.</p>
         </div>
-        <div class="museum-room-card">
+        <div class="museum-room-card rv rv-d1">
           <h4>חדר 2: המהפכה החברתית</h4>
           <p>תצוגה אינטראקטיבית של פרויקט שיקום השכונות, מפות התיישבות ודיור ציבורי.</p>
         </div>
-        <div class="museum-room-card">
+        <div class="museum-room-card rv rv-d2">
           <h4>חדר 3: זירה דיפלומטית</h4>
           <p>שחזור לשכת שר החוץ, הסכמים בינלאומיים, ועידת מדריד וביטול החלטת האו״ם.</p>
         </div>
-        <div class="museum-room-card">
+        <div class="museum-room-card rv rv-d3">
           <h4>חדר 4: מרכז הרטוריקה</h4>
           <p>עמדות שמע וניתוח נאומים היסטוריים בכנסת ישראל ותרבות הדיון הממלכתית.</p>
         </div>
@@ -1055,17 +1606,48 @@
   <!-- ═══════════════════════════════════════════════════════════════
        CATEGORY 6: תמיכה וקהילה (חוג ידידים, תרומות, ניוזלטר)
        ═══════════════════════════════════════════════════════════════ -->
-  <section class="community-section" id="donate">
+  <section class="community-section" id="community">
     <div class="container">
       <div class="org-header">
         <div class="label rv">קטגוריה 6 · תמיכה וקהילה</div>
-        <h2 class="rv rv-d1">חוג הידידים והתמיכה במורשת</h2>
-        <p class="rv rv-d2">הצטרפו לקהילת התומכים והידידים הפועלים להנחלת מנהיגות וצדק חברתי.</p>
+        <h2 class="rv rv-d1">חוג הידידים <em>והתמיכה במורשת</em></h2>
+        <p class="rv rv-d2" style="margin: 0 auto; margin-top: 1rem; color: var(--muted);">הצטרפו לקהילת התומכים והידידים הפועלים להנחלת מנהיגות וצדק חברתי.</p>
       </div>
 
-      <div style="text-align:center;" id="newsletter">
-        <a href="#contact" class="btn-primary">💛 לתרום ולתמוך בפעילות המרכז</a>
+      <blockquote class="rv rv-d3">
+        "כמו פסיפס... כל פרט וכל קהילה מביאים את הצבע הייחודי שלהם למרקם השלם של החברה הישראלית."
+      </blockquote>
+
+      <div class="donation-tiers" id="donate">
+        <div class="tier-card rv">
+          <div class="tier-name">ידיד</div>
+          <div class="tier-amount">₪180</div>
+          <div class="tier-desc">תמיכה שנתית בפעילות המרכז</div>
+          <a href="#" class="btn-outline" style="width:100%; margin-top:auto;">תרום עכשיו</a>
+        </div>
+        <div class="tier-card rv rv-d1" style="border-color: var(--accent); box-shadow: 0 10px 30px rgba(29,78,216,0.1);">
+          <div class="tier-name">תומך</div>
+          <div class="tier-amount">₪500</div>
+          <div class="tier-desc">מלגת סיוע לסטודנט מהפריפריה</div>
+          <a href="#" class="btn-primary" style="width:100%; margin-top:auto;">תרום עכשיו</a>
+        </div>
+        <div class="tier-card rv rv-d2">
+          <div class="tier-name">שותף</div>
+          <div class="tier-amount">₪1,800</div>
+          <div class="tier-desc">הקדשת יום עיון חינוכי לנוער</div>
+          <a href="#" class="btn-outline" style="width:100%; margin-top:auto;">תרום עכשיו</a>
+        </div>
       </div>
+
+      <div class="form-card rv rv-d3" id="newsletter" style="max-width: 600px; margin: 4rem auto 0; text-align:center;">
+        <h3>הצטרפו לניוזלטר</h3>
+        <p style="color:var(--muted); margin-bottom: 1.5rem;">קבלו עדכונים על תוכניות מנהיגות, אירועי הנצחה ופעילות המרכז.</p>
+        <form onsubmit="event.preventDefault(); alert('תודה שנרשמתם!'); this.reset();" style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+          <input type="email" class="fg-input" placeholder="כתובת אימייל" style="flex:1; min-width: 200px;" required>
+          <button type="submit" class="btn-primary">הרשמה</button>
+        </form>
+      </div>
+
     </div>
   </section>
 
@@ -1076,26 +1658,26 @@
     <div class="container">
       <div class="org-header">
         <div class="label rv">קטגוריה 7 · יצירת קשר</div>
-        <h2 class="rv rv-d1">נשמח לשמוע מכם</h2>
-        <p class="rv rv-d2">צוות המרכז עומד לרשותכם בכל שאלה, תיאום סיור, פנייה תקשורתית או תמיכה.</p>
+        <h2 class="rv rv-d1">נשמח <em>לשמוע מכם</em></h2>
+        <p class="rv rv-d2" style="margin: 0 auto; margin-top: 1rem; color: var(--muted);">צוות המרכז עומד לרשותכם בכל שאלה, תיאום סיור, פנייה תקשורתית או תמיכה.</p>
       </div>
 
       <div class="contact-grid">
-        <div class="visit-info-box">
+        <div class="visit-info-box rv">
           <h3>דרכי התקשרות מהירות</h3>
-          <div class="visit-row">
+          <div class="visit-row" style="margin-top: 1.5rem;">
             <div class="visit-icon">💬</div>
             <div class="visit-detail">
               <h5>וואטסאפ ישיר</h5>
-              <p><a href="https://wa.me/972528991833" target="_blank" style="color:var(--accent); font-weight:700;">052-8991833 — לחצו לשיחה בוואטסאפ</a></p>
+              <p><a href="https://wa.me/972528991833" target="_blank" style="color:var(--accent); font-weight:700; text-decoration:none;">052-8991833 — לחצו לשיחה בוואטסאפ</a></p>
             </div>
           </div>
           <div class="visit-row">
             <div class="visit-icon">✉️</div>
             <div class="visit-detail">
               <h5>דואר אלקטרוני</h5>
-              <p><a href="mailto:info@davidlevycenter.org.il" style="color:var(--accent);">info@davidlevycenter.org.il</a></p>
-              <p><a href="mailto:Rodavid48@gmail.com" style="color:var(--accent);">Rodavid48@gmail.com</a></p>
+              <p><a href="mailto:info@davidlevycenter.org.il" style="color:var(--accent); text-decoration:none;">info@davidlevycenter.org.il</a></p>
+              <p><a href="mailto:Rodavid48@gmail.com" style="color:var(--accent); text-decoration:none;">Rodavid48@gmail.com</a></p>
             </div>
           </div>
           <div class="visit-row">
@@ -1107,26 +1689,27 @@
           </div>
         </div>
 
-        <div class="form-card">
+        <div class="form-card rv rv-d1">
           <h3>טופס פנייה ישירה</h3>
-          <form onsubmit="event.preventDefault(); alert('פנייתכם התקבלה בהצלחה! צוות המרכז יחזור אליכם בהקדם.'); this.reset();">
+          <form id="contact-form" onsubmit="event.preventDefault(); document.getElementById('form-success').style.display='block'; this.reset();">
             <div class="fg">
-              <label class="fg-label">שם מלא</label>
-              <input type="text" class="fg-input" placeholder="ישראל ישראלי" required>
+              <input type="text" class="fg-input" id="f-name" placeholder=" " required>
+              <label class="fg-label" for="f-name">שם מלא</label>
             </div>
             <div class="fg">
-              <label class="fg-label">דואר אלקטרוני</label>
-              <input type="email" class="fg-input" placeholder="name@domain.co.il" required>
+              <input type="email" class="fg-input" id="f-email" placeholder=" " required>
+              <label class="fg-label" for="f-email">דואר אלקטרוני</label>
             </div>
             <div class="fg">
-              <label class="fg-label">טלפון</label>
-              <input type="tel" class="fg-input" placeholder="050-0000000" required>
+              <input type="tel" class="fg-input" id="f-phone" placeholder=" " required>
+              <label class="fg-label" for="f-phone">טלפון</label>
             </div>
             <div class="fg">
-              <label class="fg-label">תוכן הפנייה</label>
-              <textarea class="fg-textarea" placeholder="כיצד נוכל לעזור?" rows="4" required></textarea>
+              <textarea class="fg-textarea" id="f-msg" placeholder=" " rows="4" required></textarea>
+              <label class="fg-label" for="f-msg">תוכן הפנייה</label>
             </div>
-            <button type="submit" class="btn-primary" style="margin-top:0.5rem; border:none; cursor:pointer;">שליחת פנייה ←</button>
+            <button type="submit" class="btn-primary">שליחת פנייה ←</button>
+            <div id="form-success" style="display:none; color: green; margin-top: 1rem; font-weight:600; text-align:center;">✓ פנייתכם התקבלה בהצלחה! צוות המרכז יחזור אליכם בהקדם.</div>
           </form>
         </div>
       </div>
@@ -1138,18 +1721,32 @@
     <div class="container">
       <div class="footer-grid">
         <div>
-          <div class="footer-brand" style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
-            <img src="logo2.jpg" alt="לוגו מרכז דוד לוי" style="width:36px; height:36px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,255,255,0.2);">
-            <span>מרכז מורשת דוד לוי</span>
+          <div class="footer-brand" style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+            <img src="logo2.jpg" alt="לוגו מרכז דוד לוי" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid rgba(255,255,255,0.2);">
+            <span style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:#fff;">מרכז מורשת<br><span style="color:var(--gold);">דוד לוי</span></span>
           </div>
-          <p>עמותה להנצחה, שימור והנחלת מורשתו הציבורית, החברתית והממלכתית של דוד לוי ז״ל, וקידום שוויון הזדמנויות בפריפריה הישראלית.</p>
+          <p style="line-height:1.7;">עמותה להנצחה, שימור והנחלת מורשתו הציבורית, החברתית והממלכתית של דוד לוי ז״ל, וקידום שוויון הזדמנויות בפריפריה הישראלית.</p>
         </div>
+        
+        <div class="footer-links">
+          <h3>ניווט מהיר</h3>
+          <ul>
+            <li><a href="#david-levy">1. דוד לוי - האיש והמורשת</a></li>
+            <li><a href="#the-center">2. המרכז ומסמכי יסוד</a></li>
+            <li><a href="#visit">3. לבקר במרכז וכרטיסים</a></li>
+            <li><a href="#education">4. חינוך ומשאבים</a></li>
+            <li><a href="#events">5. אירועים ותערוכות</a></li>
+            <li><a href="#community">6. קהילה וחוג ידידים</a></li>
+            <li><a href="#contact">7. יצירת קשר</a></li>
+          </ul>
+        </div>
+
         <div>
-          <h3>הרשמה לעדכונים ואירועים</h3>
-          <p style="font-size:0.9rem;">קבלו עדכונים על תוכניות מנהיגות, אירועי הנצחה ופעילות המוזיאון.</p>
-          <form style="display:flex; gap:0.5rem; margin-top:1rem;" onsubmit="event.preventDefault(); alert('תודה שנרשמתם!'); this.reset();">
-            <input type="email" class="fg-input" placeholder="כתובת אימייל" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:#fff;" required>
-            <button type="submit" class="btn-primary" style="padding:0.7em 1.2em; border:none; cursor:pointer;">הרשמה</button>
+          <h3>הרשמה לעדכונים</h3>
+          <p style="font-size:0.9rem; margin-bottom:1rem;">קבלו עדכונים על תוכניות מנהיגות, אירועי הנצחה ופעילות המוזיאון.</p>
+          <form style="display:flex; gap:0.5rem;" onsubmit="event.preventDefault(); alert('תודה שנרשמתם!'); this.reset();">
+            <input type="email" class="fg-input" placeholder="כתובת אימייל" style="background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.2); color:#fff; padding:0.8rem;" required>
+            <button type="submit" class="btn-primary" style="padding:0.8rem 1.2rem;">הרשמה</button>
           </form>
         </div>
       </div>
@@ -1159,6 +1756,8 @@
       </div>
     </div>
   </footer>
+
+  <a href="#top" class="back-to-top" id="back-to-top" aria-label="חזור למעלה">↑</a>
 
   <script>
     /* Scroll Reveal */
@@ -1182,10 +1781,16 @@
     }, { threshold: 0.5 });
     document.querySelectorAll('[data-target]').forEach(el => cio.observe(el));
 
-    /* Nav scroll effect */
+    /* Nav scroll effect & Back to top button */
     window.addEventListener('scroll', () => {
       const nav = document.getElementById('nav');
       if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+
+      const btt = document.getElementById('back-to-top');
+      if (btt) {
+        if (window.scrollY > 500) btt.classList.add('visible');
+        else btt.classList.remove('visible');
+      }
     });
 
     /* Tab switcher for Category 2 */
@@ -1200,6 +1805,52 @@
       const btn = document.querySelector(`.tab-btn[onclick*="${tabId}"]`);
       switchTab(tabId, btn);
     }
+
+    /* Mobile Menu Logic */
+    const mobileBtn = document.getElementById('mobile-menu-open');
+    const mobileCloseBtn = document.getElementById('mobile-menu-close');
+    const mobilePanel = document.getElementById('mobile-nav-panel');
+    const mobileBackdrop = document.getElementById('mobile-nav-backdrop');
+
+    function openMobileMenu() {
+      mobilePanel.classList.add('open');
+      mobileBackdrop.classList.add('open');
+      document.body.classList.add('menu-open');
+      mobileBtn.setAttribute('aria-expanded', 'true');
+    }
+    
+    function closeMobileMenu() {
+      mobilePanel.classList.remove('open');
+      mobileBackdrop.classList.remove('open');
+      document.body.classList.remove('menu-open');
+      mobileBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    mobileBtn.addEventListener('click', openMobileMenu);
+    mobileCloseBtn.addEventListener('click', closeMobileMenu);
+    mobileBackdrop.addEventListener('click', closeMobileMenu);
+
+    /* Mobile Accordion */
+    document.querySelectorAll('.mobile-menu-link[data-toggle]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const parentLi = this.parentElement;
+        parentLi.classList.toggle('active');
+      });
+    });
+
+    /* Close menu on sub-link click */
+    document.querySelectorAll('.mobile-sub-menu a, .mobile-menu-link:not([data-toggle])').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    /* Hero Parallax */
+    window.addEventListener('scroll', () => {
+      const heroImg = document.getElementById('hero-img-wrapper');
+      if (heroImg && window.scrollY < window.innerHeight) {
+        heroImg.style.transform = `translateY(${window.scrollY * 0.05}px)`;
+      }
+    });
   </script>
 </body>
 </html>
