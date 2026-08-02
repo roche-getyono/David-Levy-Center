@@ -29,7 +29,11 @@
       --accent-hover: #1E3A8A;
       --navy:         #0F172A;
       --navy-light:   #1E293B;
-      --gold:         #D97706;
+      
+      /* Secondary Brand Color: Deep Olive Green */
+      --olive:        #3B5E43;
+      --olive-light:  rgba(59, 94, 67, 0.1);
+      --olive-hover:  #2D4A34;
       
       --rule:         rgba(15, 23, 42, 0.08);
       --rule-strong:  rgba(15, 23, 42, 0.15);
@@ -277,11 +281,11 @@
       transition: all 0.25s var(--ease);
       line-height: 1;
     }
-    .top-cta-tickets { background: #2563EB; color: #ffffff; }
+    .top-cta-tickets { background: transparent; color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.2); }
     .top-cta-tickets:hover { background: #1D4ED8; }
-    .top-cta-whatsapp { background: #16A34A; color: #ffffff; }
+    .top-cta-whatsapp { background: transparent; color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.2); }
     .top-cta-whatsapp:hover { background: #15803D; }
-    .top-cta-donate { background: #D97706; color: #ffffff; }
+    .top-cta-donate { background: #3B5E43; color: #ffffff; border: 1px solid #3B5E43; }
     .top-cta-donate:hover { background: #B45309; }
 
     @media (max-width: 768px) {
