@@ -7,7 +7,8 @@
 **Theme:** Institutional Dignity meets Historical Editorial  
 The visual language reflects the official Founding Document (*מסמך יסוד*): statehood, equality of opportunity, social justice, and deep connection to the Israeli periphery.
 
-- **Primary Color Register**: State Blue (`#1D4ED8` / `oklch(0.48 0.22 255.0)`), representing national leadership, diplomacy, and civic duty.
+- **Primary Color Register**: State Blue (`#1D4ED8`), representing national leadership, diplomacy, and civic duty.
+- **Secondary Color Register**: Deep Olive Green (`#3B5E43`), representing land, pioneering heritage, development towns, and statehood.
 - **Background & Surfaces**: Warm cream drafting background (`#FAF8F5`) and pure white cards (`#FFFFFF`) for institutional clarity and readability.
 - **Dark Elements & Navigation**: Deep Midnight Navy (`#0F172A`) for high contrast footers and dark accent blocks.
 
